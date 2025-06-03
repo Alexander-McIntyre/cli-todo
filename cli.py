@@ -9,23 +9,23 @@ def read_task():
 			os.system('touch todo.txt')
 		return print('File does not exist created todo.txt')
 	with open(TODO_FILE, 'r') as file:
-		lines = file.readlines()
-	return print(lines)
+		return [line.strip() for line in file if line.strip()]
 	# checking if file exists, if not returns a print statement
 	# if exists, read the file
 
 
-def write_task(task):
-	return
+def write_task(tasks):
+	with open("todo.txt", 'w') as file:
+		for task in tasks:
+			file.write(task + '\n')
 	# writes the added argument to the file at the end
 
 
 def add_task(task):
-	print(f"[✅] Task to add: '{task}'")
-	# tasks = read_task()
-	# append
-	# write_task(task)
-	# print feedback message
+	tasks = read_task()
+	tasks.append(task)
+	write_task(tasks)
+	print(f'added "{task}"')
 
 
 def delete_task(task_id):
@@ -48,6 +48,7 @@ def main():
 	print("\n📝 Welcome to the CLI Todo App!")
 	print("💡 Use -h or --help to see available options.\n")
 
+	#parsers
 	parser = argparse.ArgumentParser(
 		prog="cli-todo",
 		description="📋 Add, delete, and list your todo items from the command line.",
@@ -55,7 +56,12 @@ def main():
 	)
 
 	subparsers = parser.add_subparsers(dest="command")
-	parser.add_argument("-a", "--add", help="Add a new todo item")
+	
+	#add command
+	parser_add = subparsers.add_parser("add", help="Adding a task to todo.txt")
+	parser_add.add_argument('task', type=str, help="task description")
+
+	#delete command
 	parser.add_argument("-d", "--delete", help="Delete a todo item by ID")
 
 	# list command
@@ -63,8 +69,8 @@ def main():
 
 	args = parser.parse_args()
 
-	if args.add:
-		add_task(args.add)
+	if args.command == "add":
+		add_task(args.task)
 	elif args.delete:
 		delete_task(args.delete)
 	elif args.command == "list":
