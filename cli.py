@@ -28,11 +28,14 @@ def add_task(task):
 	print(f'added "{task}"')
 
 
-def delete_task(task_id):
-	print(f"[🗑️] Task to delete: ID or keyword '{task_id}'")
-	# reads the TODO_FILE
-	# either match task and delete or match index
-
+def delete_task(index):
+	tasks = read_task()
+	if index < 1 or index > len(tasks):
+		print(f'task "{index}" does not exist')
+		return
+	removed = tasks.pop(index-1)
+	write_task(tasks)
+	print(f'deleted "{removed}"')
 
 def list_task():
 	print("[📃] Listing all tasks...")
@@ -62,7 +65,8 @@ def main():
 	parser_add.add_argument('task', type=str, help="task description")
 
 	#delete command
-	parser.add_argument("-d", "--delete", help="Delete a todo item by ID")
+	parser_delete = subparsers.add_parser("delete", help="Adding a task to todo.txt")
+	parser_delete.add_argument('index', type=int, help="task number to delete")
 
 	# list command
 	subparsers.add_parser("list", help="List all tasks")
@@ -71,8 +75,8 @@ def main():
 
 	if args.command == "add":
 		add_task(args.task)
-	elif args.delete:
-		delete_task(args.delete)
+	elif args.command == "delete":
+		delete_task(args.index)
 	elif args.command == "list":
 		list_task()
 	else:
