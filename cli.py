@@ -3,33 +3,41 @@ import os
 
 TODO_FILE = "todo.txt"
 
-def read_task():
-	if not os.path.exists(TODO_FILE):
-		if os.name == 'posix':
-			os.system('touch todo.txt')
-		return print('File does not exist created todo.txt')
-	with open(TODO_FILE, 'r') as file:
-		return [line.strip() for line in file if line.strip()]
-	# checking if file exists, if not returns a print statement
-	# if exists, read the file
+
+def file_exists():
+    #Graceful error handling
+    if not os.path.exists(TODO_FILE):
+        try:
+            with open(TODO_FILE, 'w') as file:
+                pass
+            print("[🌱] A new todo list has created")
+        except IOError as e:
+            print(f"[❌] Couldn't create the todo list Error: {e}")
+            sys.exit(1)
+
+
+def read_tasks():
+    file_exists()
+    with open(TODO_FILE, 'r') as file:
+        return [line.strip() for line in file if line.strip()]
 
 
 def write_task(tasks):
+	#Helper function for both add and delete
 	with open("todo.txt", 'w') as file:
 		for task in tasks:
 			file.write(task + '\n')
-	# writes the added argument to the file at the end
 
 
 def add_task(task):
-	tasks = read_task()
+	tasks = read_tasks()
 	tasks.append(task)
 	write_task(tasks)
 	print(f'added "{task}"')
 
 
 def delete_task(index):
-	tasks = read_task()
+	tasks = read_tasks()
 	if index < 1 or index > len(tasks):
 		print(f'task "{index}" does not exist')
 		return
@@ -39,12 +47,12 @@ def delete_task(index):
 
 def list_task():
 	print("[📃] Listing all tasks...")
-	tasks = read_task()
+	tasks = read_tasks()
 	if not tasks:
 		print("no task")
 	else:
-		for i, task in enumerate(tasks, start=1):
-			print(f"{i}. {task}")
+		for index, task in enumerate(tasks, start=1):
+			print(f"{index}. {task}")
 
 
 def main():
@@ -80,13 +88,7 @@ def main():
 	elif args.command == "list":
 		list_task()
 	else:
-		print("[ℹ️] No command provided.")
-		print("👉 Try one of the following:")
-		print("   -a 'task'    to add a new todo")
-		print("   -d 'id'      to delete a task")
-		print("   list         to list all tasks")
-		print("   -h           for full help\n")
-
+		parser.print_help()
 
 if __name__ == "__main__":
 	main()
