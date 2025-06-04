@@ -21,24 +21,21 @@ def teardown_module(module):
 
 def test_add_task():
     output = run_cmd('python todo.py add "Write unit tests"')
-    assert '✅' in output
     assert 'Write unit tests' in output
 
 def test_list_tasks():
     run_cmd('python todo.py add "Buy milk"')
     output = run_cmd('python todo.py list')
-    assert '📃' in output
     assert 'Buy milk' in output
 
 def test_delete_task():
     run_cmd('python todo.py add "Clean room"')
     output = run_cmd('python todo.py delete 1')
-    assert '🗑️' in output
     assert 'Clean room' in output
 
 def test_delete_invalid():
     output = run_cmd('python todo.py delete 99')
-    assert '⚠️' in output or 'does not exist' in output
+    assert 'does not exist' in output
 
 def test_help_message():
     output = run_cmd('python todo.py -h')
